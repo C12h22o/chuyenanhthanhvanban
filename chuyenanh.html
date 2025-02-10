@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Image to Text Converter</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      margin: 0;
+      padding: 20px;
+      text-align: center;
+    }
+    h1 {
+      color: #333;
+    }
+    input[type="file"] {
+      margin: 20px 0;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      width: 80%;
+      max-width: 400px;
+    }
+    button {
+      padding: 10px 20px;
+      background-color: #5cb85c;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    button:hover {
+      background-color: #4cae4c;
+    }
+    pre {
+      background-color: #fff;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      padding: 10px;
+      margin-top: 20px;
+      text-align: left;
+      overflow: auto;
+      max-height: 300px;
+      white-space: pre-wrap; /* Giúp văn bản tự động xuống dòng */
+    }
+    /* Responsive */
+    @media (max-width: 600px) {
+      input[type="file"], button {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1>Chuyển Hình Ảnh Thành Văn Bản</h1>
+  <input type="file" id="imageInput" accept="image/*">
+  <button id="convertButton">Chuyển Đổi</button>
+  <p><strong>Văn bản nhận được:</strong></p>
+  <pre id="result"></pre>
+
+  <script src="https://unpkg.com/tesseract.js@2.1.1/dist/tesseract.min.js"></script>
+  <script>
+    document.getElementById('convertButton').addEventListener('click', () => {
+      const fileInput = document.getElementById('imageInput');
+      if (fileInput.files.length === 0) {
+        alert('Vui lòng chọn một hình ảnh!');
+        return;
+      }
+
+      const file = fileInput.files[0];
+      const reader = new FileReader();
+      reader.onload = function(event) {
+        const imageSrc = event.target.result;
+        Tesseract.recognize(imageSrc, 'vie', {
+          logger: m => console.log(m) // Hiển thị tiến trình
+        }).then(({ data: { text } }) => {
+          document.getElementById('result').textContent = text;
+        }).catch(error => {
+          console.error(error);
+          alert('Có lỗi xảy ra khi nhận diện văn bản.');
+        });
+      };
+      reader.readAsDataURL(file);
+    });
+  </script>
+</body>
+</html>
